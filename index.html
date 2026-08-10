@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>LIVRE — IA de Viajes</title>
+  <meta name="description" content="Tu asistente de transporte local en Bahía Blanca.">
+  <meta property="og:title" content="LIVRE — IA de Viajes">
+  <meta property="og:description" content="Tu asistente de transporte local en Bahía Blanca.">
+  <meta property="og:image" content="https://hash-ia.site/images/favicon.png">
+  <meta property="og:url" content="https://hash-ia.site">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="LIVRE — IA de Viajes">
+  <meta name="twitter:description" content="Tu asistente de transporte local en Bahía Blanca.">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="apple-touch-icon" href="images/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=1784946800">
+</head>
+<body>
+
+  <div id="lock-screen" hidden>
+    <div id="lock-box"></div>
+  </div>
+
+  <div id="app" hidden>
+
+    <aside id="sidebar">
+      <div id="app-title">
+        <img src="images/logo_hash.png" alt="HASH" id="app-logo">
+      </div>
+      <nav id="front-list"></nav>
+    </aside>
+
+    <main id="main">
+      <header id="main-header">
+        <button type="button" id="hamburger" aria-label="Abrir menú">
+          <span></span><span></span><span></span>
+        </button>
+        <h2 id="active-front-name" hidden>—</h2>
+        <p id="active-front-description" hidden></p>
+        <button type="button" id="neural-btn" aria-label="Ver red neural">⬡ Red neural</button>
+      </header>
+
+  <div id="neural-modal" hidden role="dialog" aria-modal="true">
+    <div id="neural-modal-box">
+      <button type="button" id="neural-close">✕</button>
+      
+      <canvas id="neural-canvas"></canvas>
+    </div>
+  </div>
+
+      <section id="message-list" aria-live="polite"></section>
+
+      <footer id="composer">
+        <div class="input-wrapper"><textarea id="message-input" rows="1"></textarea><button type="button" id="voice-btn" aria-label="Hablar con Hash">🎤</button><button type="button" id="message-submit">Enviar</button></div>
+      </footer>
+    </main>
+
+  </div>
+  <div id="sidebar-overlay"></div>
+  <div id="new-front-modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div id="new-front-modal-box">
+      <h3 id="modal-title">Nuevo chat</h3>
+      <label for="new-front-name">Nombre <span aria-hidden="true">*</span></label>
+      <input type="text" id="new-front-name" placeholder="Ej: Lecturas, Trabajo, Ideas..." maxlength="60" autocomplete="off">
+      <label for="new-front-description">Descripción <span class="optional">(opcional)</span></label>
+      <input type="text" id="new-front-description" placeholder="Una línea sobre este chat." maxlength="120" autocomplete="off">
+      <p id="new-front-status" aria-live="polite"></p>
+      <div id="modal-actions">
+        <button type="button" id="new-front-cancel">Cancelar</button>
+        <button type="button" id="new-front-submit">Crear chat</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="confirm-delete-modal" hidden role="dialog" aria-modal="true">
+    <div id="confirm-delete-box">
+      <h3>Eliminar chat</h3>
+      <p>¿Eliminar "<span id="confirm-delete-name"></span>"? Esta acción no se puede deshacer.</p>
+      <div id="confirm-delete-actions">
+        <button type="button" id="confirm-delete-cancel">Cancelar</button>
+        <button type="button" id="confirm-delete-ok">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="rename-modal" hidden role="dialog" aria-modal="true">
+    <div id="rename-modal-box">
+      <h3>Renombrar chat</h3>
+      <input type="text" id="rename-input" maxlength="60" autocomplete="off">
+      <p id="rename-status" aria-live="polite"></p>
+      <div id="rename-actions">
+        <button type="button" id="rename-cancel">Cancelar</button>
+        <button type="button" id="rename-submit">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="settings-modal" hidden role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div id="settings-modal-box">
+      <h3 id="settings-title">Ajustes</h3>
+
+      <div class="settings-category">
+        <span class="settings-category-title">General</span>
+        <div class="settings-row">
+          <label for="settings-font-size">Tamaño de fuente</label>
+          <span id="settings-font-label">16px</span>
+        </div>
+        <input type="range" id="settings-font-size" min="12" max="22" step="1" value="16">
+      </div>
+
+      <div class="settings-category">
+        <span class="settings-category-title">Memoria</span>
+        <div class="settings-row">
+          <span class="settings-row-label">Cargar archivo .txt</span>
+          <button type="button" id="settings-load-memory">Cargar memoria</button>
+        </div>
+        <div class="settings-row">
+          <span class="settings-row-label">Exportar memoria</span>
+          <button type="button" id="settings-export-memory">Descargar memoria</button>
+        </div>
+        <div id="memory-doc-list"></div>
+      </div>
+
+      <div class="settings-category">
+        <span class="settings-category-title">Cuenta</span>
+        <div class="settings-row">
+          <span class="settings-row-label">¿Necesitás ayuda?</span>
+          <a id="settings-support-link" href="https://t.me/hashsupp_bot" target="_blank">Soporte</a>
+        </div>
+        <div class="settings-row">
+          <span class="settings-row-label">Salir de tu cuenta</span>
+          <button type="button" id="settings-logout">Cerrar sesión</button>
+        </div>
+      </div>
+
+      <div id="settings-actions"></div>
+    </div>
+  </div>
+  <!-- Modal pago -->
+  <div id="crypto-modal" hidden role="dialog" aria-modal="true">
+    <div id="crypto-modal-box">
+      <button type="button" id="crypto-modal-close">✕</button>
+      <div id="crypto-modal-icon"><img src="images/favicon.png" alt="HASH"></div>
+      <h3>Activar HASH Pro</h3>
+      <p id="crypto-modal-desc">Elegí cómo querés pagar tu plan.</p>
+
+      <!-- Selector de método -->
+      <div id="payment-method-selector">
+        <button type="button" class="pay-method-btn active" data-method="usdt">₮ USDT</button>
+        <button type="button" class="pay-method-btn" data-method="paypal">PayPal</button>
+        <button type="button" class="pay-method-btn" data-method="mp">Mercado Pago</button>
+      </div>
+
+      <!-- USDT -->
+      <div id="pay-panel-usdt" class="pay-panel">
+        <img id="crypto-qr" src="images/trc20.png" alt="QR USDT TRC20">
+        <div id="crypto-address-row">
+          <span id="crypto-address" data-real="TDPfrfpipHtENAANT2zkgLZNFmZE6MaJRw">TDPfrfpipHtENAANT2zkgLZNFmZE6MaJRw</span>
+          <button type="button" id="crypto-copy-btn">Copiar</button>
+        </div>
+        <p id="crypto-note">Solo red Tron (TRC20). Enviá exactamente 10 USDT.</p>
+      </div>
+
+      <!-- PayPal -->
+      <div id="pay-panel-paypal" class="pay-panel" hidden>
+        <p class="pay-desc">Pagá $10 USD de forma segura con PayPal.</p>
+        <div id="paypal-container-VPXEFLL833YWN"></div>
+      </div>
+
+      <!-- Mercado Pago -->
+      <div id="pay-panel-mp" class="pay-panel" hidden>
+        <p class="pay-desc">Pagá con Mercado Pago. Aceptamos tarjetas y saldo.</p>
+        <button type="button" id="mp-pay-btn">Pagar con Mercado Pago</button>
+      </div>
+
+      <a id="crypto-support-link" href="https://t.me/hashsupp_bot" target="_blank">¿Problemas? Contactá soporte</a>
+    </div>
+  </div>
+
+  <!-- PayPal SDK -->
+  <script src="https://www.paypal.com/sdk/js?client-id=BAA_RwSSwEfH3wEm_UCqcLBLdWJkjJI8TyXlrXjjHKXWfrMZ6xqeiL7BbLFokKtxclmxqPyqsE1CnW9Kuo&components=hosted-buttons&disable-funding=venmo&currency=USD"></script>
+  
+  <script src="js/app.js?v=1784946800"></script>
+</body>
+</html>

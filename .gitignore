@@ -1,0 +1,14 @@
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/*
+!.vscode/extensions.json
+
+# Node (por si en el futuro se agregan herramientas de build)
+node_modules/
+npm-debug.log*
+
+# Misceláneo
+*.log
